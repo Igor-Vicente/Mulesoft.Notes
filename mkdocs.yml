@@ -1,0 +1,17 @@
+site_name: MuleCraft Notes
+site_description: Estudos de caso, arquitetura e desenvolvimento de software com MuleSoft
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: pt-BR
+
+nav:
+  - Início: index.md
+  - Português:
+      - Visão geral: pt/index.md
+      - Segurança:
+          - Criptografia: pt/seguranca/criptografia.md
+      - Performance: pt/performance/index.md

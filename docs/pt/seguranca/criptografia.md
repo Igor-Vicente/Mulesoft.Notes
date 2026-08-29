@@ -16,17 +16,17 @@ Criptografia transforma dados legíveis (texto claro) em dados cifrados. Somente
 
 ### 1.1 Hash e criptografia: diferenças fundamentais
 
-| Característica | Criptografia | Hash |
-| --- | --- | --- |
-| Reversível? | Sim — quem tem a chave certa recupera o original | Não — é uma função unidirecional |
-| Objetivo | Confidencialidade | Integridade e verificação |
-| Tamanho da saída | Varia conforme a entrada | Fixo; SHA-256 sempre gera 256 bits |
-| Usa chave? | Sim, simétrica ou assimétrica | Não; senhas podem usar *salt*, que não é uma chave |
-| Exemplo | Cifrar um arquivo | Armazenar senhas ou verificar arquivos |
+| Característica   | Criptografia                                     | Hash                                               |
+| ---------------- | ------------------------------------------------ | -------------------------------------------------- |
+| Reversível?      | Sim — quem tem a chave certa recupera o original | Não — é uma função unidirecional                   |
+| Objetivo         | Confidencialidade                                | Integridade e verificação                          |
+| Tamanho da saída | Varia conforme a entrada                         | Fixo; SHA-256 sempre gera 256 bits                 |
+| Usa chave?       | Sim, simétrica ou assimétrica                    | Não; senhas podem usar _salt_, que não é uma chave |
+| Exemplo          | Cifrar um arquivo                                | Armazenar senhas ou verificar arquivos             |
 
 Regra prática: se você precisa recuperar o dado original, use criptografia. Se precisa apenas verificar que o dado não mudou ou comparar sem armazenar o original, como uma senha, use hash.
 
-Hash não é uma forma de criptografia fraca. Um hash não é "descriptografado"; um atacante pode tentar descobrir a entrada por força bruta ou tabelas previamente calculadas (*rainbow tables*).
+Hash não é uma forma de criptografia fraca. Um hash não é "descriptografado"; um atacante pode tentar descobrir a entrada por força bruta ou tabelas previamente calculadas (_rainbow tables_).
 
 ### 1.2 Algoritmos de hash
 
@@ -63,7 +63,7 @@ No HTTPS moderno, mecanismos de chave pública autenticam as partes e ajudam a e
 
 ## 2. Certificados digitais
 
-Um certificado digital vincula uma chave pública a uma identidade, como uma pessoa, empresa ou servidor. Ele é assinado por uma autoridade certificadora (CA) ou, no caso de PGP, pode participar de uma rede de confiança (*web of trust*). Contém:
+Um certificado digital vincula uma chave pública a uma identidade, como uma pessoa, empresa ou servidor. Ele é assinado por uma autoridade certificadora (CA) ou, no caso de PGP, pode participar de uma rede de confiança (_web of trust_). Contém:
 
 - chave pública do titular;
 - informações de identidade;
@@ -76,22 +76,34 @@ O certificado não contém a chave privada. Ela é armazenada separadamente e no
 
 #### Codificações
 
-| Formato | Características |
-| --- | --- |
-| PEM | Texto Base64 com cabeçalhos como `-----BEGIN CERTIFICATE-----`. Extensões `.pem`, `.crt`, `.cer` e `.key` |
-| DER | Representação binária. Extensões `.der` e `.cer` |
+A codificação define **como os mesmos dados criptográficos são representados**
+no arquivo. Ela não altera a chave ou o certificado nem aumenta sua segurança.
+Por exemplo, um certificado X.509 pode ser representado como texto Base64 em PEM
+ou como bytes binários em DER.
 
-PEM e DER podem representar a mesma informação; muda a codificação em texto ou binário.
+| Formato | Características                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------- |
+| PEM     | Texto Base64 com cabeçalhos como `-----BEGIN CERTIFICATE-----`. Extensões `.pem`, `.crt`, `.cer` e `.key` |
+| DER     | Representação binária. Extensões `.der` e `.cer`                                                          |
+
+PEM e DER podem representar a mesma informação; muda apenas a forma como ela é
+codificada em texto ou binário. A ferramenta que consumir o certificado precisa
+suportar a codificação escolhida.
 
 #### Contêineres
 
-| Formato | O que armazena | Uso típico |
-| --- | --- | --- |
-| CRT/CER | Certificado público; às vezes, uma cadeia | Distribuição para validação |
-| KEY | Chave privada | Permanecer no servidor |
+Um contêiner define **quais objetos criptográficos ficam agrupados no arquivo**.
+Dependendo do formato, ele pode guardar um certificado, uma chave privada, uma
+cadeia de certificados ou várias entradas. Alguns contêineres, como PKCS#12 e JKS,
+também podem ser protegidos por senha.
+
+| Formato                      | O que armazena                                            | Uso típico                             |
+| ---------------------------- | --------------------------------------------------------- | -------------------------------------- |
+| CRT/CER                      | Certificado público; às vezes, uma cadeia                 | Distribuição para validação            |
+| KEY                          | Chave privada                                             | Permanecer no servidor                 |
 | PKCS#12/PFX (`.p12`, `.pfx`) | Certificado, chave privada e cadeia, protegidos por senha | Importação e exportação entre sistemas |
-| JKS (`.jks`) | Contêiner Java para certificados e chaves | Aplicações JVM, incluindo Mule |
-| PKCS#7 (`.p7b`, `.p7c`) | Certificados ou cadeia, sem chave privada | Distribuição da cadeia |
+| JKS (`.jks`)                 | Contêiner Java para certificados e chaves                 | Aplicações JVM, incluindo Mule         |
+| PKCS#7 (`.p7b`, `.p7c`)      | Certificados ou cadeia, sem chave privada                 | Distribuição da cadeia                 |
 
 No mundo Mule/Java, JKS e PKCS#12 são comuns porque o Mule Runtime executa na JVM.
 
@@ -122,6 +134,11 @@ No contexto do Mule, operações KBE e XML normalmente usam certificados X.509 e
 
 ### 2.4 Certificados autoassinados com keytool
 
+`keytool` é uma ferramenta de linha de comando distribuída com o JDK. Ela permite
+gerar pares de chaves, criar certificados, importar e exportar certificados e
+administrar keystores. É especialmente útil no ecossistema MuleSoft porque o Mule
+Runtime executa sobre a JVM e utiliza formatos de keystore compatíveis com Java.
+
 Pré-requisito: Java instalado, `JAVA_HOME` configurado e `keytool` acessível no `PATH`.
 
 > Certificados autoassinados são adequados para testes e ambientes controlados. Em endpoints públicos de produção, prefira certificados emitidos por uma CA confiável.
@@ -132,15 +149,15 @@ Pré-requisito: Java instalado, `JAVA_HOME` configurado e `keytool` acessível n
 keytool -genkeypair -alias my-api-keystore -keyalg RSA -keysize 2048 -validity 365 -keystore my-api-keystore.p12 -storetype PKCS12
 ```
 
-| Parâmetro | O que faz |
-| --- | --- |
-| `-genkeypair` | Gera o par de chaves |
-| `-alias` | Identifica a entrada no keystore |
-| `-keyalg RSA` | Define o algoritmo |
-| `-keysize 2048` | Define o tamanho da chave |
-| `-validity 365` | Define a validade em dias |
-| `-keystore` | Define o arquivo de saída |
-| `-storetype PKCS12` | Define o formato do contêiner |
+| Parâmetro           | O que faz                        |
+| ------------------- | -------------------------------- |
+| `-genkeypair`       | Gera o par de chaves             |
+| `-alias`            | Identifica a entrada no keystore |
+| `-keyalg RSA`       | Define o algoritmo               |
+| `-keysize 2048`     | Define o tamanho da chave        |
+| `-validity 365`     | Define a validade em dias        |
+| `-keystore`         | Define o arquivo de saída        |
+| `-storetype PKCS12` | Define o formato do contêiner    |
 
 Extraia o certificado público:
 
@@ -165,13 +182,13 @@ O keystore fica no servidor, protegido por senha, e nunca é compartilhado. O `.
 keytool -importcert -alias trusted-demo-api -file my-public-cert.crt -keystore client-truststore.p12 -storetype PKCS12
 ```
 
-| Parâmetro | O que faz |
-| --- | --- |
-| `-importcert` | Importa um certificado |
-| `-alias` | Identifica a entrada no truststore |
-| `-file` | Indica o certificado público |
-| `-keystore` | Indica o arquivo de destino |
-| `-storetype PKCS12` | Define o formato |
+| Parâmetro           | O que faz                          |
+| ------------------- | ---------------------------------- |
+| `-importcert`       | Importa um certificado             |
+| `-alias`            | Identifica a entrada no truststore |
+| `-file`             | Indica o certificado público       |
+| `-keystore`         | Indica o arquivo de destino        |
+| `-storetype PKCS12` | Define o formato                   |
 
 Se o truststore não existir, o `keytool` cria o arquivo e solicita uma senha. Para um certificado autoassinado, também pode pedir confirmação de confiança.
 
@@ -214,91 +231,91 @@ Um certificado autoassinado pode ser apropriado nesse trecho quando a confiança
 
 **Quando avaliar a não ativação:** prioridade de latência muito baixa, aceitação do modelo de confiança da infraestrutura e dados sem requisitos rígidos de criptografia em trânsito.
 
-**Quando ativar:** requisitos internos, contratuais ou regulatórios, como ambientes sujeitos a PCI DSS, dados sensíveis e arquiteturas *Zero Trust*.
+**Quando ativar:** requisitos internos, contratuais ou regulatórios, como ambientes sujeitos a PCI DSS, dados sensíveis e arquiteturas _Zero Trust_.
 
-## 4. Cryptography Module do MuleSoft
+## 4. Módulo de Criptografia do MuleSoft
 
-O [Cryptography Module](https://docs.mulesoft.com/cryptography-module/latest/) permite cifrar, decifrar, assinar e verificar dados dentro dos flows.
+O [Cryptography Module (Módulo de Criptografia)](https://docs.mulesoft.com/cryptography-module/latest/)
+implementa **criptografia no nível da aplicação**. Diferentemente do TLS, que
+protege os dados enquanto trafegam pela rede, o módulo permite que o próprio flow
+cifre, decifre, assine ou verifique o conteúdo processado pela aplicação.
+
+Por exemplo, um flow pode criptografar um payload antes de salvá-lo em um banco de
+dados e decifrá-lo somente quando precisar processá-lo novamente. O mesmo conceito
+pode ser aplicado antes de enviar dados para uma fila, arquivo ou sistema externo.
+Assim, a informação pode permanecer protegida mesmo depois de sair do canal TLS.
 
 1. **JCE:** oferece PBE, que deriva uma chave de uma senha, e KBE, que usa uma chave criptográfica fornecida.
 2. **PGP:** usa chaves pública e privada e é comum na troca segura de arquivos entre parceiros.
 3. **Operações XML:** cifram partes de XML e aplicam ou verificam assinaturas digitais XML.
 
-| Estratégia | Origem da chave | Tipo | Uso típico |
-| --- | --- | --- | --- |
-| JCE/PBE | Senha ou frase secreta | Simétrica | Senha compartilhada |
-| JCE/KBE | Chave fornecida diretamente | Simétrica ou assimétrica | Chaves ou keystores gerenciados |
-| PGP | Par de chaves PGP | Assimétrica/híbrida | Troca segura entre parceiros |
-| XML | Depende da estratégia | Simétrica ou assimétrica | Cifrar ou assinar partes de XML |
+| Estratégia | Origem da chave             | Tipo                     | Uso típico                      |
+| ---------- | --------------------------- | ------------------------ | ------------------------------- |
+| JCE/PBE    | Senha ou frase secreta      | Simétrica                | Senha compartilhada             |
+| JCE/KBE    | Chave fornecida diretamente | Simétrica ou assimétrica | Chaves ou keystores gerenciados |
+| PGP        | Par de chaves PGP           | Assimétrica/híbrida      | Troca segura entre parceiros    |
+| XML        | Depende da estratégia       | Simétrica ou assimétrica | Cifrar ou assinar partes de XML |
 
-## 5. Exemplo com JCE e KBE
+### 4.1 Exemplo com JCE e KBE
 
-> **Atenção:** exemplo didático. Não armazene senhas no XML; use Secure Configuration Properties. RSA deve proteger dados pequenos ou chaves de sessão. Para payloads maiores, use AES-GCM e proteja a chave AES com criptografia assimétrica.
+> **Atenção:** para tornar o exemplo autocontido e didático, a senha
+> `Senha@123` foi mantida diretamente no XML. Em produção, use Secure
+> Configuration Properties ou outro mecanismo seguro de gerenciamento de
+> segredos. RSA deve proteger dados pequenos ou chaves de sessão. Para payloads
+> maiores, use AES-GCM e proteja a chave AES com criptografia assimétrica.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto"
-      xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
-      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="
-        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
-        http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd">
 
-    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config">
-        <http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS">
-            <tls:context>
-                <tls:key-store type="pkcs12" path="certs/my-api-keystore.p12"
-                    alias="my-api-keystore" keyPassword="${secure::tls.keyPassword}"
-                    password="${secure::tls.storePassword}" />
-            </tls:context>
-        </http:listener-connection>
-    </http:listener-config>
-
-    <global-property name="env" value="dev" />
-    <configuration-properties file="config/${env}-configuration.yaml" />
-
-    <crypto:jce-config name="Crypto_Jce" type="PKCS12"
-        keystore="certs/my-api-keystore.p12" password="${secure::tls.storePassword}">
-        <crypto:jce-key-infos>
-            <crypto:jce-asymmetric-key-info keyId="minhaChaveApi"
-                alias="my-api-keystore" password="${secure::tls.storePassword}" />
-        </crypto:jce-key-infos>
-    </crypto:jce-config>
-
-    <flow name="testeFlow">
-        <http:listener config-ref="HTTP_Listener_config" path="/p1" />
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+<mule xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="33fad091-7d83-4b8e-a40f-811c6cabbe3e" >
+		<http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="pkcs12" path="certs/my-api-keystore.p12" alias="my-api-keystore" keyPassword="Senha@123" password="Senha@123" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="3af19b8a-ec5d-465b-a894-7f5cec71ac0b" name="env" value="dev" />
+	<configuration-properties doc:name="Configuration properties" doc:id="4b14a088-78c7-4391-9143-49e3351be5b0" file="config/${env}-configuration.yaml" />
+	<crypto:jce-config name="Crypto_Jce" type="PKCS12" doc:name="Crypto Jce" doc:id="bd5dde2a-6afa-4bce-99a9-f47e9840fe92" keystore="certs/my-api-keystore.p12" password="Senha@123" >
+		<crypto:jce-key-infos >
+			<crypto:jce-asymmetric-key-info keyId="minhaChaveApi" alias="my-api-keystore" password="Senha@123" />
+		</crypto:jce-key-infos>
+	</crypto:jce-config>
+	<flow name="testeFlow" doc:id="e2ffbc66-912c-416d-840b-ff6c6274db90" >
+		<http:listener doc:name="Listener" doc:id="ac2c7fea-6048-4d20-9f55-9f5e3d9d6879" config-ref="HTTP_Listener_config" path="/p1"/>
+		<ee:transform doc:name="Transform Message" doc:id="ebc7de77-39d1-484b-92ce-93cbf0959545" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-        <logger level="INFO" message="#[payload]" />
-        <crypto:jce-encrypt config-ref="Crypto_Jce" algorithm="RSA" keyId="minhaChaveApi" />
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9fc9a0b4-c86f-45f3-b574-110f79534ba1" message="#['\n'] #[payload] #['\n']"/>
+		<crypto:jce-encrypt doc:name="Jce encrypt" doc:id="bcef53f7-df4c-44ac-a4fc-6df4557200ed" config-ref="Crypto_Jce" algorithm="RSA" keyId="minhaChaveApi"/>
+		<ee:transform>
+    <ee:message>
+        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{ encrypted: payload as String { encoding: "Base64" } }
-]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-        <logger level="INFO" message="#[payload]" />
-    </flow>
+{
+    encrypted: payload as String {encoding: "Base64"}
+}]]></ee:set-payload>
+    </ee:message>
+</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e24ffbbb-cae2-4790-8171-d4327013f3df" message="#['\n'] #[payload] #['\n']" />
+	</flow>
 </mule>
 ```
 
-## 6. Referências
+## 5. Referências
 
 - [MuleSoft — Cryptography Module Reference](https://docs.mulesoft.com/cryptography-module/latest/cryptography-module-reference)
 - [MuleSoft — CloudHub 2.0 Networking Architecture](https://docs.mulesoft.com/cloudhub-2/ch2-networking-guide)

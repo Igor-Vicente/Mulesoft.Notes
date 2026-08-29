@@ -1,7 +1,11 @@
-# Estudos sobre MuleSoft
+# Estudos de Engenharia de Software
 
-Este site reúne estudos de caso, decisões de arquitetura e práticas de
-desenvolvimento de software utilizando MuleSoft.
+[English version](../en/index.md)
+
+Uma coleção de estudos técnicos e notas práticas sobre engenharia de software,
+arquitetura, segurança, performance e integrações. MuleSoft faz parte do conteúdo,
+mas os conceitos apresentados também podem ser aplicados a outras tecnologias e
+plataformas.
 
 ## Tópicos
 

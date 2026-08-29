@@ -1,9 +1,9 @@
 # MuleCraft Notes
 
-Estudos de caso, arquitetura e desenvolvimento de software com MuleSoft.
+Estudos técnicos e notas práticas sobre engenharia de software, arquitetura,
+segurança, performance, integrações e MuleSoft.
 
 ## Idioma
 
 - [Português](pt/index.md)
-- Inglês — em breve
-
+- [English](en/index.md)

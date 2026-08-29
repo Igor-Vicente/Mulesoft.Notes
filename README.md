@@ -1,7 +1,8 @@
 # MuleCraft Notes
 
-Documentação de estudos de caso, arquitetura e desenvolvimento de software
-com MuleSoft, publicada no GitHub Pages com MkDocs.
+Estudos técnicos e notas práticas sobre engenharia de software, arquitetura,
+segurança, performance, integrações e MuleSoft, publicados no GitHub Pages com
+MkDocs.
 
 ## Executar localmente
 

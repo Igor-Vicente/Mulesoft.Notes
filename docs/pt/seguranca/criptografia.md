@@ -1,5 +1,7 @@
 # Criptografia aplicada ao MuleSoft
 
+[English version](../../en/security/cryptography.md)
+
 Fundamentos, certificados, TLS e Cryptography Module.
 
 ## 1. Fundamentos de criptografia
@@ -277,15 +279,15 @@ http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/c
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="33fad091-7d83-4b8e-a40f-811c6cabbe3e" >
 		<http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS">
 			<tls:context >
-				<tls:key-store type="pkcs12" path="certs/my-api-keystore.p12" alias="my-api-keystore" keyPassword="Senha@123" password="Senha@123" />
+				<tls:key-store type="pkcs12" path="certs/my-api-keystore.p12" alias="my-api-keystore" keyPassword="teste@123" password="teste@123" />
 			</tls:context>
 		</http:listener-connection>
 	</http:listener-config>
 	<global-property doc:name="Global Property" doc:id="3af19b8a-ec5d-465b-a894-7f5cec71ac0b" name="env" value="dev" />
 	<configuration-properties doc:name="Configuration properties" doc:id="4b14a088-78c7-4391-9143-49e3351be5b0" file="config/${env}-configuration.yaml" />
-	<crypto:jce-config name="Crypto_Jce" type="PKCS12" doc:name="Crypto Jce" doc:id="bd5dde2a-6afa-4bce-99a9-f47e9840fe92" keystore="certs/my-api-keystore.p12" password="Senha@123" >
+	<crypto:jce-config name="Crypto_Jce" type="PKCS12" doc:name="Crypto Jce" doc:id="bd5dde2a-6afa-4bce-99a9-f47e9840fe92" keystore="certs/my-api-keystore.p12" password="teste@123" >
 		<crypto:jce-key-infos >
-			<crypto:jce-asymmetric-key-info keyId="minhaChaveApi" alias="my-api-keystore" password="Senha@123" />
+			<crypto:jce-asymmetric-key-info keyId="minhaChaveApi" alias="my-api-keystore" password="Teste@123" />
 		</crypto:jce-key-infos>
 	</crypto:jce-config>
 	<flow name="testeFlow" doc:id="e2ffbc66-912c-416d-840b-ff6c6274db90" >
@@ -304,9 +306,10 @@ payload]]></ee:set-payload>
     <ee:message>
         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
+import toBase64 from dw::core::Binaries
 ---
 {
-    encrypted: payload as String {encoding: "Base64"}
+    encrypted: toBase64(payload)
 }]]></ee:set-payload>
     </ee:message>
 </ee:transform>

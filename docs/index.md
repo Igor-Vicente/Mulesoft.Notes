@@ -1,7 +1,7 @@
-# MuleCraft Notes
+# MuleSoft Notes
 
-Estudos técnicos e notas práticas sobre engenharia de software, arquitetura,
-segurança, performance, integrações e MuleSoft.
+Technical studies and practical notes on software engineering, architecture,
+security, performance, integrations, and MuleSoft.
 
 ## Idioma
 

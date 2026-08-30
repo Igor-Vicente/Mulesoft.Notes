@@ -1,4 +1,4 @@
-# MuleCraft Notes
+# MuleSoft Notes
 
 Estudos técnicos e notas práticas sobre engenharia de software, arquitetura,
 segurança, performance, integrações e MuleSoft, publicados no GitHub Pages com

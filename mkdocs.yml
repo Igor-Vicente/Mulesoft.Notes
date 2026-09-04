@@ -12,6 +12,10 @@ nav:
   - Início: index.md
   - Português:
       - Visão geral: pt/index.md
+      - Maven:
+          - Introdução: pt/maven/index.md
+          - BOM e gerenciamento de versões: pt/maven/bom.md
+          - Exemplo completo com MuleSoft: pt/maven/exemplo-bom-mulesoft.md
       - Segurança:
           - Criptografia: pt/seguranca/criptografia.md
       - Performance: pt/performance/index.md

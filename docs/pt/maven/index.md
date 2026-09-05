@@ -1,46 +1,39 @@
 # Maven
 
-O **Apache Maven** é uma ferramenta de automação de build e gerenciamento de projetos. Ele é muito utilizado no ecossistema Java e também participa do processo de construção e publicação de aplicações Mule.
+[Apache Maven](https://maven.apache.org/) é uma ferramenta de automação de _build_ e gerenciamento de projetos, usada principalmente no ecossistema Java. Ela padroniza como um projeto é compilado, testado, empacotado e publicado.
 
-Em termos simples, o Maven recebe uma descrição do projeto, normalmente armazenada no arquivo `pom.xml`, e executa tarefas como:
+O Maven é uma ferramenta de _build_. Ele pode ser usado em uma pipeline de CI/CD, mas não é, por si só, uma plataforma de CI/CD.
 
-- baixar as bibliotecas necessárias;
-- compilar o código;
-- executar testes;
-- empacotar a aplicação;
-- disponibilizar o artefato para outros projetos ou ambientes.
+## O que o Maven faz na prática
 
-O Maven é uma ferramenta de **build**. Ele pode ser executado em uma pipeline de CI/CD, mas não é, por si só, uma plataforma de CI/CD.
+- **Gerencia dependências:** no `pom.xml`, você declara as bibliotecas e versões necessárias. O Maven baixa essas bibliotecas — inclusive suas dependências transitivas — de repositórios como o Maven Central.
+- **Padroniza o ciclo de build:** compilação, testes, empacotamento, instalação local e publicação seguem fases bem definidas, como `compile`, `test`, `package`, `install` e `deploy`.
+- **Adota convenção sobre configuração:** usa uma estrutura de diretórios conhecida, como `src/main/java`, `src/test/java` e `src/main/resources`. Isso torna projetos Maven mais previsíveis para quem os mantém.
+- **Centraliza a configuração:** o arquivo `pom.xml` reúne informações do projeto, dependências, plugins, versão, repositórios e regras de build.
 
-## Por que utilizar Maven?
-
-Sem uma ferramenta de build, cada projeto pode adotar comandos, diretórios e maneiras diferentes de localizar bibliotecas. O Maven reduz essa variação por meio de convenções.
-
-Se um projeto segue essas convenções, outro desenvolvedor consegue reconhecer rapidamente sua estrutura e executar o build com poucos comandos. Isso torna os builds mais previsíveis tanto na máquina do desenvolvedor quanto em uma pipeline.
+Antes do Maven, era comum que cada projeto adotasse um processo próprio para compilar, organizar bibliotecas e gerar artefatos. As convenções do Maven reduzem essa inconsistência.
 
 ## Instalação
 
-Antes de instalar o Maven, instale um JDK compatível com o projeto e configure a variável `JAVA_HOME`.
+Consulte as [instruções oficiais de instalação](https://maven.apache.org/install.html).
 
-No Windows:
+No Windows, o processo básico é:
 
-1. Baixe o arquivo binário compactado na [página oficial do Maven](https://maven.apache.org/download.cgi).
-2. Descompacte-o em um diretório permanente, por exemplo `C:\\tools\\apache-maven`.
-3. Adicione o diretório `bin` do Maven à variável de ambiente `Path`.
-4. Abra um novo terminal e verifique a instalação:
+1. Instalar um JDK compatível com o projeto e configurar a variável de ambiente `JAVA_HOME`.
+2. Baixar e descompactar a distribuição do Maven no diretório desejado.
+3. Adicionar o diretório `bin` à variável de ambiente `Path`, por exemplo: `C:\apache-maven-3.8.8\bin`.
+4. Abrir um novo terminal e validar a instalação:
 
-```powershell
+```bash
 mvn --version
 ```
 
-O resultado deve mostrar, entre outras informações, as versões do Maven e do Java que estão sendo utilizadas. Consulte também o [guia oficial de instalação](https://maven.apache.org/install.html).
-
 !!! tip "Prefira o Maven Wrapper quando o projeto o fornecer"
-    Arquivos como `mvnw`, `mvnw.cmd` e `.mvn/wrapper` permitem que a equipe use a versão de Maven definida pelo projeto. Nesse caso, no Windows, execute `./mvnw.cmd package` em vez de `mvn package`.
+Arquivos como `mvnw`, `mvnw.cmd` e `.mvn/wrapper` permitem que a equipe use a versão de Maven definida pelo projeto. No Windows, execute `./mvnw.cmd package` em vez de `mvn package`.
 
 ## Estrutura convencional de um projeto
 
-Um projeto Java Maven costuma ter a seguinte estrutura:
+Um projeto Java Maven normalmente segue esta estrutura:
 
 ```text
 meu-projeto/
@@ -58,15 +51,63 @@ meu-projeto/
 - `src/main/resources`: arquivos de configuração e outros recursos;
 - `src/test/java`: código dos testes;
 - `src/test/resources`: recursos usados pelos testes;
-- `target`: saída gerada pelo build. Normalmente não deve ser versionada.
+- `target`: saída gerada pelo build; normalmente não deve ser versionada.
 
 Projetos Mule possuem uma estrutura própria, reconhecida pelo Mule Maven Plugin, mas continuam usando o `pom.xml` e os conceitos centrais do Maven.
 
-## O que é o `pom.xml`?
+## O papel do `pom.xml`
 
-POM significa **Project Object Model**. O `pom.xml` descreve a identidade do projeto, suas dependências e a forma como o build deve ocorrer.
+O `pom.xml` (_Project Object Model_) é o arquivo central de um projeto Maven. Ele descreve o que o projeto é, de quais componentes precisa e como deve ser construído. Sem esse arquivo, o Maven não tem as informações necessárias para executar o build do projeto.
 
-Um POM mínimo pode ser escrito assim:
+### Informações que o POM declara
+
+1. **Identidade do projeto:** as coordenadas GAV — `groupId`, `artifactId` e `version` — identificam unicamente um artefato Maven.
+2. **Dependências:** bibliotecas que devem estar disponíveis no classpath do projeto.
+3. **Build:** plugins, _goals_, compilação, testes e empacotamento, como `jar`, `war` ou `pom`.
+4. **Herança e composição:** um POM pode herdar configurações de um `parent` e agregar projetos em `modules`.
+5. **Gerenciamento de versões:** `dependencyManagement` pode centralizar versões, inclusive pela importação de um BOM.
+
+Em termos simples, o Maven é o motor do build; o `pom.xml` é o conjunto de instruções que informa o que construir, quais componentes usar e quais regras seguir.
+
+### Elementos mais comuns
+
+| Elemento       | Finalidade                                                                       |
+| -------------- | -------------------------------------------------------------------------------- |
+| `groupId`      | Identifica a organização ou o grupo responsável, por exemplo `com.minhaempresa`. |
+| `artifactId`   | Nome técnico do projeto ou artefato.                                             |
+| `version`      | Versão do artefato.                                                              |
+| `dependencies` | Bibliotecas efetivamente usadas pela aplicação.                                  |
+| `plugins`      | Ferramentas usadas no build, nos testes, no empacotamento ou na publicação.      |
+| `properties`   | Valores reutilizáveis, como a versão do Java.                                    |
+| `repositories` | Locais onde o Maven procura dependências.                                        |
+| `build`        | Configurações do processo de construção.                                         |
+
+Uma estrutura simplificada é:
+
+```xml
+<project>
+    <!-- Identificação do projeto -->
+    <properties>
+        <!-- Valores reutilizáveis -->
+    </properties>
+    <build>
+        <plugins>
+            <!-- Ferramentas utilizadas pelo Maven -->
+        </plugins>
+    </build>
+    <dependencies>
+        <!-- Componentes utilizados pela aplicação -->
+    </dependencies>
+    <repositories>
+        <!-- Locais para procurar dependências -->
+    </repositories>
+    <pluginRepositories>
+        <!-- Locais para procurar plugins Maven -->
+    </pluginRepositories>
+</project>
+```
+
+Um POM mínimo, por sua vez, precisa da versão do modelo e das coordenadas do projeto:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -74,39 +115,23 @@ Um POM mínimo pode ser escrito assim:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.example</groupId>
     <artifactId>meu-projeto</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </project>
 ```
 
-As três coordenadas abaixo identificam o artefato. Elas são frequentemente chamadas de **GAV**:
+O sufixo `SNAPSHOT` indica uma versão em desenvolvimento; uma versão sem esse sufixo normalmente representa uma entrega estável e imutável.
 
-| Elemento | Finalidade | Exemplo |
-| --- | --- | --- |
-| `groupId` | Identifica a organização ou o grupo responsável | `com.example` |
-| `artifactId` | Identifica o projeto ou artefato dentro do grupo | `meu-projeto` |
-| `version` | Identifica uma versão específica do artefato | `1.0.0-SNAPSHOT` |
+Ao executar `mvn package`, o Maven lê o `pom.xml`, resolve as dependências, compila o código, executa os testes e gera o artefato final — normalmente um `.jar` ou `.war`.
 
-`SNAPSHOT` indica uma versão ainda em desenvolvimento. Uma versão sem esse sufixo normalmente representa uma entrega estável e imutável.
-
-Outras seções comuns do POM são:
-
-- `properties`: valores reutilizáveis, como versões e codificação;
-- `dependencies`: componentes efetivamente usados pelo projeto;
-- `dependencyManagement`: regras e versões para dependências que poderão ser usadas;
-- `build/plugins`: ferramentas que participam do build;
-- `repositories`: repositórios nos quais procurar dependências;
-- `pluginRepositories`: repositórios nos quais procurar plugins;
-- `distributionManagement`: destino usado para publicar o artefato.
-
-!!! note
-    Nem todas essas seções precisam aparecer em todos os projetos. O Maven herda configurações do Super POM e pode receber outras configurações de um Parent POM.
+Em resumo: o POM declara a aplicação e suas necessidades; os plugins definem como construí-la; as dependências fornecem os componentes utilizados; e os repositórios indicam onde encontrar esses componentes.
 
 ## Dependências
 
-Uma dependência é um componente externo de que o projeto precisa para compilar, testar ou executar. Em vez de armazenar manualmente cada arquivo JAR no projeto, declaramos suas coordenadas no POM:
+Dependências são bibliotecas externas, ou seja, código de terceiros de que o projeto precisa para compilar ou executar. Em vez de implementar do zero funcionalidades comuns — como ler JSON, conectar a um banco de dados ou fazer chamadas HTTP — uma aplicação pode utilizar bibliotecas já existentes.
+
+Por exemplo, para trabalhar com JSON em Java, uma aplicação pode usar Jackson:
 
 ```xml
 <dependencies>
@@ -118,144 +143,167 @@ Uma dependência é um componente externo de que o projeto precisa para compilar
 </dependencies>
 ```
 
-A versão acima é apenas ilustrativa. Em um projeto real, escolha uma versão compatível e mantida.
+O Maven localiza o JAR correspondente em um repositório remoto, como o Maven Central, e o disponibiliza para o projeto.
 
-O Maven também pode resolver **dependências transitivas**. Se a biblioteca A depende da biblioteca B, o Maven normalmente inclui B sem que ela precise ser declarada novamente. Ainda assim, dependências usadas diretamente pelo código devem ser declaradas explicitamente; isso documenta o projeto e evita que uma mudança na árvore transitiva quebre o build.
+O Maven também resolve dependências transitivas. Se uma biblioteca depende de outra, essa segunda biblioteca normalmente também é obtida. Ainda assim, declare explicitamente no POM as dependências que seu código usa diretamente.
 
 ### Escopos mais comuns
 
-O `scope` informa em quais classpaths e etapas uma dependência é necessária:
+O `scope` informa **em que momento uma dependência deve estar disponível**. Pense em três momentos diferentes:
 
-| Escopo | Uso principal |
-| --- | --- |
-| `compile` | Compilação e execução. É o valor padrão. |
-| `provided` | Necessária para compilar, mas fornecida em execução pelo JDK ou contêiner. |
-| `runtime` | Necessária para executar, mas não para compilar. |
-| `test` | Utilizada apenas na compilação e execução de testes. |
+- **compilação:** quando o Java transforma o código-fonte em classes;
+- **execução:** quando a aplicação já empacotada está rodando;
+- **testes:** quando os testes são compilados e executados.
 
-O escopo `import` tem um propósito diferente: ele só pode ser usado, com uma dependência do tipo `pom`, dentro de `dependencyManagement` para importar um [BOM](bom.md).
+Por exemplo, Jackson normalmente é usado tanto pelo código quanto pela aplicação em execução; por isso, seu escopo padrão é `compile`. Já o JUnit é usado para testar, mas não deve fazer parte da aplicação entregue; por isso, usa o escopo `test`.
 
-## Repositórios
+| Escopo | Disponível em | Quando usar |
+| --- | --- | --- |
+| `compile` | Compilação, execução e testes. | É o padrão. Use para bibliotecas que o código da aplicação importa e utiliza em produção, como Jackson. |
+| `provided` | Compilação e testes; não em execução. | Use quando o ambiente fornece a biblioteca em produção, como uma API fornecida pelo servidor de aplicações. |
+| `runtime` | Execução e testes; não na compilação do código principal. | Use quando a aplicação não importa diretamente a API, mas precisa da implementação ao rodar, como determinados drivers JDBC. |
+| `test` | Somente compilação e execução dos testes. | Use para ferramentas de teste, como JUnit e Mockito. Não acompanha o artefato de produção. |
 
-O Maven trabalha principalmente com dois tipos de repositório:
+Exemplo com JUnit:
 
-- **local**: cache existente na máquina do usuário;
-- **remoto**: serviço do qual artefatos são baixados ou para o qual são publicados, como Maven Central, Nexus, Artifactory ou Anypoint Exchange.
+```xml
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>VERSAO_COMPATIVEL</version>
+    <scope>test</scope>
+</dependency>
+```
 
-Por padrão, o repositório local fica em:
+Assim, o Maven disponibiliza o JUnit para `mvn test`, mas não o inclui como dependência necessária para executar a aplicação.
+
+O escopo `import` é diferente dos demais: ele não adiciona uma biblioteca ao classpath. Só pode ser usado com uma dependência do tipo `pom`, dentro de `dependencyManagement`, para importar as versões gerenciadas por um BOM.
+
+### Repositório local
+
+Depois do primeiro download, o Maven guarda os artefatos em um repositório local e os reutiliza em outros projetos que precisem da mesma versão:
+
+| Sistema operacional | Local padrão                          |
+| ------------------- | ------------------------------------- |
+| Linux e macOS       | `~/.m2/repository`                    |
+| Windows             | `C:\Users\SEU_USUARIO\.m2\repository` |
+
+Os arquivos são organizados pelas coordenadas GAV. Para o exemplo do Jackson, o caminho é semelhante a:
 
 ```text
-# Linux e macOS
-~/.m2/repository
-
-# Windows
-C:\Users\SEU_USUARIO\.m2\repository
+~/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.0/
+├── jackson-databind-2.17.0.jar
+├── jackson-databind-2.17.0.pom
+└── ...
 ```
 
-Ao precisar de uma dependência, o Maven procura primeiro no repositório local. Se ela não estiver disponível, consulta os repositórios remotos configurados e armazena o resultado localmente.
+Em outras palavras: `groupId` (com pontos convertidos em diretórios) → `artifactId` → `version` → arquivos do artefato.
 
-Os artefatos são organizados pelas coordenadas Maven. Por exemplo:
+### Como a resolução funciona
 
-```text
-~/.m2/repository/
-└── com/fasterxml/jackson/core/jackson-databind/2.17.0/
-    ├── jackson-databind-2.17.0.jar
-    └── jackson-databind-2.17.0.pom
-```
+1. Você executa um comando, como `mvn compile` ou `mvn install`.
+2. O Maven lê o `pom.xml` para identificar as dependências necessárias.
+3. Para cada dependência, verifica primeiro o repositório local.
+4. Se ela não estiver disponível localmente, busca-a em um repositório remoto configurado e a armazena no diretório `.m2`.
+5. Quando o artefato já existe localmente, ele é reutilizado, sem novo download.
 
-Use o modo offline somente quando as dependências e os plugins necessários já estiverem disponíveis localmente:
+Além do Maven Central, organizações podem utilizar repositórios como Nexus, Artifactory e Anypoint Exchange.
 
-```bash
-mvn -o package
-```
+Todo projeto Maven resolve as dependências declaradas quando necessário. Em modo _offline_ (`mvn -o ...`), porém, o Maven só usa o que já existe no repositório local e falha se um artefato estiver ausente.
 
-!!! warning "Evite apagar todo o repositório local como primeira tentativa"
-    A pasta `.m2/repository` é um cache compartilhado por vários projetos. Se houver suspeita de um download corrompido, remova apenas o diretório do artefato afetado e execute o build novamente.
+!!! tip
+Em caso de dependência corrompida ou conflito de resolução, inspecione a pasta específica do artefato em `~/.m2/repository`. Evite apagar todo o cache sem necessidade.
 
-## Ciclos de vida, fases e goals
+## Ciclo de vida
 
-O Maven possui três ciclos de vida nativos:
+O ciclo de vida (_lifecycle_) do Maven é a sequência padronizada de fases que um projeto percorre durante o build: da validação inicial à publicação do artefato. Assim, os projetos adotam um fluxo previsível para compilar, testar e empacotar.
 
-- `default`: constrói e publica o projeto;
-- `clean`: remove arquivos gerados por builds anteriores;
-- `site`: gera a documentação do projeto.
+### Os três ciclos de vida
 
-As principais fases do ciclo `default` são:
+| Ciclo     | Finalidade                                                                            |
+| --------- | ------------------------------------------------------------------------------------- |
+| `default` | Constrói e publica o projeto: compilação, testes, empacotamento, instalação e deploy. |
+| `clean`   | Remove artefatos gerados por builds anteriores.                                       |
+| `site`    | Gera a documentação ou o site do projeto.                                             |
 
-```text
-validate → compile → test → package → verify → install → deploy
-```
+Cada ciclo tem suas próprias fases. O `default` é o mais usado no dia a dia e, por isso, costuma receber mais atenção. As fases principais dos outros dois ciclos são:
 
-| Fase | Resultado esperado |
-| --- | --- |
-| `validate` | Verifica se o projeto possui as informações necessárias. |
-| `compile` | Compila o código-fonte principal. |
-| `test` | Executa os testes unitários. |
-| `package` | Gera o artefato, como JAR, WAR ou pacote Mule. |
-| `verify` | Executa verificações adicionais sobre o pacote e testes de integração. |
-| `install` | Copia o artefato para o repositório Maven local. |
-| `deploy` | Publica o artefato em um repositório remoto. |
+| Ciclo | Fases | Resultado |
+| --- | --- | --- |
+| `clean` | `pre-clean` → `clean` → `post-clean` | Remove a saída de builds anteriores; normalmente, a fase `clean` remove o diretório `target`. |
+| `site` | `pre-site` → `site` → `post-site` → `site-deploy` | Prepara, gera, finaliza e, quando configurado, publica a documentação do projeto. |
 
-As fases são cumulativas dentro do mesmo ciclo. Portanto:
+Ao executar uma fase, o Maven também executa as fases anteriores **do mesmo ciclo**. Por exemplo, `mvn clean` executa `pre-clean` e `clean`; `mvn site` executa `pre-site` e `site`. No uso diário, o ciclo `default` é o mais frequente.
+
+### Fases do ciclo `default`
+
+| Fase       | O que faz                                                                                          |
+| ---------- | -------------------------------------------------------------------------------------------------- |
+| `validate` | Verifica se o projeto está correto e se as informações necessárias, como o POM, estão disponíveis. |
+| `compile`  | Compila o código-fonte.                                                                            |
+| `test`     | Executa testes unitários, sem empacotar o projeto.                                                 |
+| `package`  | Empacota o código compilado no formato definido, como `.jar` ou `.war`.                            |
+| `verify`   | Executa verificações adicionais, geralmente relacionadas a testes de integração.                   |
+| `install`  | Instala o pacote no repositório local, tornando-o disponível para outros projetos locais.          |
+| `deploy`   | Publica o pacote em um repositório remoto, para consumo por outros times ou projetos.              |
+
+As fases são cumulativas. Ao pedir uma fase, o Maven executa todas as anteriores na ordem. Portanto:
 
 ```bash
 mvn install
 ```
 
-executa `validate`, `compile`, `test`, `package`, `verify` e, por fim, `install`, incluindo as fases intermediárias não exibidas nessa lista resumida.
+executa `validate` → `compile` → `test` → `package` → `verify` → `install`.
 
-Uma **fase** é uma etapa do ciclo de vida. Um **goal** é uma tarefa específica fornecida por um plugin. No comando abaixo, `clean` e `package` são fases, enquanto `dependency:tree` é um goal:
+Exemplos práticos:
+
+- `mvn compile`: compila o projeto;
+- `mvn test`: compila e executa os testes;
+- `mvn package`: compila, testa e gera o `.jar` ou `.war`;
+- `mvn install`: realiza o processo anterior e instala o artefato em `~/.m2/repository`;
+- `mvn deploy`: realiza o processo anterior e publica o artefato em um repositório remoto.
+
+Uma **fase** é uma etapa do ciclo de vida. Um **goal** é uma tarefa específica fornecida por um plugin. No exemplo abaixo, `clean` e `package` são fases, enquanto `dependency:tree` é um goal:
 
 ```bash
 mvn clean dependency:tree package
 ```
 
-## Plugins
+## Plugins e comandos úteis
 
-O Maven coordena o build, mas são os plugins que executam o trabalho concreto. Por exemplo, plugins podem compilar código, executar testes ou criar um pacote.
-
-Em um projeto Mule, o `mule-maven-plugin` acrescenta ao Maven o suporte necessário para reconhecer e construir tipos de empacotamento como `mule-application`:
-
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.mule.tools.maven</groupId>
-            <artifactId>mule-maven-plugin</artifactId>
-            <version>${mule.maven.plugin.version}</version>
-            <extensions>true</extensions>
-        </plugin>
-    </plugins>
-</build>
-```
-
-## Comandos úteis
+O Maven coordena o build, mas os plugins realizam o trabalho concreto, como compilar, testar e criar pacotes. O `mule-maven-plugin`, por exemplo, permite que o Maven reconheça e construa projetos com `packaging` igual a `mule-application`.
 
 ```bash
-# Exibe as versões do Maven e do Java
-mvn --version
-
 # Remove a saída do build anterior e cria um novo pacote
 mvn clean package
 
-# Mostra a árvore de dependências resolvida
+# Exibe a árvore de dependências resolvida
 mvn dependency:tree
 
-# Mostra o POM efetivo após heranças, perfis e valores padrão
+# Exibe o POM efetivo, incluindo heranças, perfis e valores padrão
 mvn help:effective-pom
 
-# Mostra os perfis disponíveis e quais estão ativos
+# Exibe os perfis disponíveis e aqueles ativos
 mvn help:active-profiles
 ```
 
-## Próximo passo
+## Maven em aplicações MuleSoft
 
-Depois de compreender POM, dependências e repositórios, veja como um [BOM centraliza versões de dependências](bom.md), inclusive em aplicações Mule.
+Em aplicações Mule, o `pom.xml` também define o `packaging` como `mule-application`, usa o `mule-maven-plugin` e declara conectores, módulos e especificações de API como dependências. Um BOM pode ser importado em `dependencyManagement` para centralizar as versões desses componentes.
+
+O exemplo completo contém:
+
+- configuração do `mule-maven-plugin` e do `maven-clean-plugin`;
+- importação de um BOM publicado no Anypoint Exchange;
+- dependências para HTTP Connector, Sockets Connector, APIkit e uma especificação RAML;
+- repositórios de dependências, de plugins e configuração de publicação;
+- explicações de cada seção do POM e correções aplicadas ao documento de origem.
+
+Consulte [BOM e gerenciamento de versões](bom.md) para entender a centralização de versões e o [exemplo completo com MuleSoft](exemplo-bom-mulesoft.md) para o POM comentado da aplicação e do BOM.
 
 ## Referências
 
-- [Documentação do Apache Maven](https://maven.apache.org/guides/)
-- [Introdução ao POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html)
-- [Ciclo de vida do build](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)
-- [Mecanismo de dependências](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)
-- [Repositórios Maven](https://maven.apache.org/guides/introduction/introduction-to-repositories.html)
+- [Apache Maven](https://maven.apache.org/)
+- [Instalação do Maven](https://maven.apache.org/install.html)
+- [Referência do POM](https://maven.apache.org/pom.html)
+- [Mecanismo de dependências do Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)

@@ -9,6 +9,12 @@ plataformas.
 
 ## Tópicos
 
+### Maven
+
+- [Introdução](maven/index.md)
+- [BOM e gerenciamento de versões](maven/bom.md)
+- [Exemplo completo com MuleSoft](maven/exemplo-bom-mulesoft.md)
+
 ### Segurança
 
 - [Criptografia](seguranca/criptografia.md)

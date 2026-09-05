@@ -21,6 +21,8 @@ nav:
       - Performance: pt/performance/index.md
   - English:
       - Overview: en/index.md
+      - Maven:
+          - Introduction: en/maven/index.md
       - Security:
           - Cryptography: en/security/cryptography.md
       - Performance: en/performance/index.md
